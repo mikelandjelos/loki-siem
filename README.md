@@ -153,6 +153,9 @@
   9. [Data Analytics at Scale](https://www.oreilly.com/library/view/data-management-at/9781492054771/) - supplementary [ ]
   10. [Fundamentals of Data Visualization](https://www.oreilly.com/library/view/fundamentals-of-data/9781492031079/) - supplementary [ ]
 
+- Papers:
+  1. [Toward the Observability of Cloud-Native Applications: The Overview of the State-of-the-Art](https://ieeexplore.ieee.org/document/10141603);
+
 - Web sites:
   1. [Log Formats - a (Mostly) Complete Guide](https://graylog.org/post/log-formats-a-complete-guide/) [x]
      1. [Using Trend Analysis for Better Insights](https://graylog.org/post/using-trend-analysis-for-better-insights/) [x]
