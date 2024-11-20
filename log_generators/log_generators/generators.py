@@ -1,5 +1,4 @@
-import logging
-from logging import Handler, Logger, getLogger
+from logging import INFO, Handler, Logger, getLogger
 from multiprocessing import Pool, cpu_count
 from os.path import abspath, exists
 from typing import Type
@@ -17,7 +16,7 @@ def __add_handlers(logger: Logger, outputs: list[LogOutput]):
 
 
 def generate_logs(config_pickled: bytes):
-    config: LogGeneratorConfig = dill.loads(config_pickled)  # type: ignore
+    config: LogGeneratorConfig = LogGeneratorConfig.model_validate(dill.loads(config_pickled))  # type: ignore
     assert isinstance(config, LogGeneratorConfig)
 
     input_file_path = abspath(config.input_logfile)
@@ -25,9 +24,8 @@ def generate_logs(config_pickled: bytes):
     if not exists(input_file_path):
         raise ValueError(f"File `{input_file_path}` doesn't exist.")
 
-    logging.basicConfig(level=logging.INFO)
-
     logger = getLogger(config.label)
+    logger.setLevel(INFO)
     __add_handlers(logger, config.outputs)
 
     for log in parse_logfile(
