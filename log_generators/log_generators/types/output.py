@@ -1,7 +1,5 @@
 import sys
-from logging import FileHandler, Handler, StreamHandler
-from logging.handlers import DatagramHandler, HTTPHandler, SocketHandler
-from typing import Any, Literal, Type
+from typing import Any, Literal
 
 import validators
 from pydantic import BaseModel, model_validator
@@ -9,18 +7,12 @@ from pydantic import BaseModel, model_validator
 LogOutputType = Literal[
     "STREAM",
     "FILE",
+    "TCP_RAW",
     "TCP",
+    "UDP_RAW",
     "UDP",
     "HTTP",
 ]
-
-LOGGING_HANDLERS: dict[LogOutputType, Type[Handler]] = {
-    "STREAM": StreamHandler,
-    "FILE": FileHandler,
-    "TCP": SocketHandler,
-    "UDP": DatagramHandler,
-    "HTTP": HTTPHandler,
-}
 
 
 class LogOutput(BaseModel):
@@ -37,7 +29,9 @@ class LogOutput(BaseModel):
             handler_type == "STREAM"
             or handler_type == "FILE"
             or handler_type == "TCP"
+            or handler_type == "TCP_RAW"
             or handler_type == "UDP"
+            or handler_type == "UDP_RAW"
             or handler_type == "HTTP"
         ), f"Handler type `{handler_type}` is of type {type(handler_type)}"
 
@@ -63,7 +57,7 @@ class LogOutput(BaseModel):
                 assert isinstance(
                     handler_arguments["filename"], str
                 ), "Filename must be a string."
-            case "TCP" | "UDP":
+            case "TCP" | "UDP" | "TCP_RAW" | "UDP_RAW":
                 assert "port" in handler_arguments, "Port must be provided."
                 assert isinstance(
                     handler_arguments["port"], int

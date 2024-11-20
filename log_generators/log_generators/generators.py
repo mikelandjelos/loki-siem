@@ -1,12 +1,13 @@
-from logging import Formatter, Handler, Logger, getLogger
+import logging
+from logging import Handler, Logger, getLogger
 from multiprocessing import Pool, cpu_count
 from os.path import abspath, exists
 from typing import Type
 
 import dill
 
-from .dtos import LOGGING_HANDLERS, LogGeneratorConfig, LogOutput
 from .parsers import parse_logfile
+from .types import LOGGING_HANDLERS, LogGeneratorConfig, LogOutput
 
 
 def __add_handlers(logger: Logger, outputs: list[LogOutput]):
@@ -24,11 +25,10 @@ def generate_logs(config_pickled: bytes):
     if not exists(input_file_path):
         raise ValueError(f"File `{input_file_path}` doesn't exist.")
 
+    logging.basicConfig(level=logging.INFO)
+
     logger = getLogger(config.label)
     __add_handlers(logger, config.outputs)
-
-    for handler in logger.handlers:
-        handler.setFormatter(Formatter("%(message)s"))
 
     for log in parse_logfile(
         input_file_path,
@@ -36,7 +36,7 @@ def generate_logs(config_pickled: bytes):
         timestamp_format=config.timestamp_info.format,
         encoding="utf-8-sig",
     ):
-        logger.critical(log)
+        logger.info(log)
 
 
 def start_generators(

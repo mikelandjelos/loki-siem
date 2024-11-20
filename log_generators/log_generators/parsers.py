@@ -8,7 +8,7 @@ from typing import Any, Optional
 from dateutil.parser import parse
 from tomli import load
 
-from .dtos import GlobalConfig
+from .types import GlobalConfig
 
 
 def parse_logfile(
