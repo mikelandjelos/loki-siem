@@ -1,4 +1,4 @@
-from logging import FATAL, log
+import argparse
 
 from dotenv import find_dotenv, get_key, load_dotenv
 
@@ -13,20 +13,29 @@ from log_generators import GlobalConfig, parse_toml_config, start_generators
 
 
 def main():
-    load_dotenv()
-    config_path = get_key(find_dotenv(), "CONFIG_PATH")
+    config_path: str | None
+    parser = argparse.ArgumentParser(prog="LogGenerator")
+    parser.add_argument(
+        "-c",
+        "--config_path",
+    )
+    args = parser.parse_args()
 
-    if config_path is None:
-        msg = "Config path (`CONFIG_PATH` environment variable) not provided!"
-        log(FATAL, msg)
-        raise EnvironmentError(msg)
+    if args.config_path is not None:
+        config_path = args.config_path
+    else:
+        assert (
+            load_dotenv() is True
+        ), "No CLI argument or .env (`CONFIG_PATH` key) given for configuration file path."
+        config_path = get_key(find_dotenv(), "CONFIG_PATH")
+
+    assert isinstance(
+        config_path, str
+    ), "Config file path not given! (can be given through .env or as a CLI argument)."
 
     generators_config: GlobalConfig = parse_toml_config(config_path)
 
-    try:
-        start_generators(generators_config.generator_configs)
-    except Exception as ex:
-        log(FATAL, ex)
+    start_generators(generators_config.generator_configs)
 
 
 if __name__ == "__main__":
