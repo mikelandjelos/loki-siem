@@ -9,24 +9,29 @@ from dateutil.parser import parse
 from tomli import load
 
 from .types import GlobalConfig
+from .util import reversed_lines
 
 
-def parse_logfile(
+def logfile_to_logstream(
     filename: str,
     timestamp_label: str = "timestamp",
     timestamp_format: str = "iso8601",
     encoding: str = "utf-8",
+    reverse_order: bool = False,
 ):
-    with open(filename, mode="rt", encoding=encoding) as csv_file:
+    with open(
+        filename,
+        mode="rt",
+        encoding=encoding,
+    ) as csv_file:
         attributes = [
             attr.strip(f'"{string.whitespace}')
             for attr in csv_file.readline().split(",")
         ]
 
         reader = csv.DictReader(
-            csv_file,
+            reversed_lines(csv_file) if reverse_order else csv_file,
             fieldnames=attributes,
-            doublequote=True,
         )
 
         old_timestamp: datetime | None = None
@@ -36,10 +41,10 @@ def parse_logfile(
 
             assert (
                 new_timestamp is not None
-            ), f"Log `{row}` doesn't have a timestamp data"
+            ), f"Log `{row}` doesn't have a timestamp data labeled `{timestamp_label}`"
             assert isinstance(
                 new_timestamp, str
-            ), f"`{new_timestamp}` is of type `{type(new_timestamp)}`"
+            ), f"`{new_timestamp}` is of type `{type(new_timestamp)}`, but should be `str`"
 
             new_timestamp = (
                 parse(new_timestamp)
@@ -47,15 +52,15 @@ def parse_logfile(
                 else datetime.strptime(new_timestamp, timestamp_format)
             )
 
-            sleep_duration = abs(
-                (old_timestamp - new_timestamp).seconds
+            sleep_duration = (
+                (new_timestamp - old_timestamp).total_seconds()
                 if old_timestamp is not None
-                else 0
+                else 0.0
             )
 
+            time.sleep(sleep_duration)
             row[timestamp_label] = datetime.now().isoformat()
             yield json.dumps(row)
-            time.sleep(sleep_duration)
 
             old_timestamp = new_timestamp
 

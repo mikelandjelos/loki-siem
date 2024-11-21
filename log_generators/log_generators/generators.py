@@ -1,11 +1,9 @@
+from concurrent.futures import ThreadPoolExecutor
 from logging import INFO, Handler, Logger, getLogger
-from multiprocessing import Pool, cpu_count
 from os.path import abspath, exists
 from typing import Type
 
-import dill
-
-from .parsers import parse_logfile
+from .parsers import logfile_to_logstream
 from .types import LOGGING_HANDLERS, LogGeneratorConfig, LogOutput
 
 
@@ -15,11 +13,8 @@ def __add_handlers(logger: Logger, outputs: list[LogOutput]):
         logger.addHandler(handler_type(**output.arguments))
 
 
-def generate_logs(config_pickled: bytes):
-    config: LogGeneratorConfig = LogGeneratorConfig.model_validate(dill.loads(config_pickled))  # type: ignore
-    assert isinstance(config, LogGeneratorConfig)
-
-    input_file_path = abspath(config.input_logfile)
+def generate_logs(config: LogGeneratorConfig):
+    input_file_path = abspath(config.input.path)
 
     if not exists(input_file_path):
         raise ValueError(f"File `{input_file_path}` doesn't exist.")
@@ -28,18 +23,23 @@ def generate_logs(config_pickled: bytes):
     logger.setLevel(INFO)
     __add_handlers(logger, config.outputs)
 
-    for log in parse_logfile(
+    for log in logfile_to_logstream(
         input_file_path,
-        timestamp_label=config.timestamp_info.label,
-        timestamp_format=config.timestamp_info.format,
+        timestamp_label=config.input.timestamp_info.label,
+        timestamp_format=config.input.timestamp_info.format,
         encoding="utf-8-sig",
+        reverse_order=config.input.reverse_order,
     ):
         logger.info(log)
 
 
 def start_generators(
     configs: list[LogGeneratorConfig],
-    num_proc: int | None = None,
+    num_threads: int | None = None,
 ):
-    with Pool(num_proc or min(cpu_count(), len(configs))) as pool:
-        pool.map(generate_logs, [dill.dumps(config) for config in configs])  # type: ignore
+    num_of_threads = num_threads or len(configs)
+    with ThreadPoolExecutor(
+        max_workers=num_of_threads,
+        thread_name_prefix="generator",
+    ) as executor:
+        executor.map(generate_logs, configs)
