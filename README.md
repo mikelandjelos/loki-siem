@@ -2,7 +2,7 @@
 
 ## Zadatak
 
-- [ ] Upoznati se sa formatima, nacinom cuvanja i predstavljanja logova
+- [x] Upoznati se sa formatima, nacinom cuvanja i predstavljanja logova
 - [ ] Prouciti Loki platformu za prikupljanje sistemskih logova i mogucnosti integracije u ELK stek
   - [ ] Posebno sagledati mogucnosti integracije Logstash i Loki platforme
 - [ ] Projektovati arhitekturu sistema baziranog na ELK steku i Loki platformi za prikupljanje i bezbednosnu analizu sistemskih logova
@@ -137,26 +137,85 @@
 
 ### Loki, Logstash
 
-- TBA;
+#### Loki
+
+- General:
+  - cost effective;
+  - highly scalable;
+  - doesn't index contents (making full-text search indexes), but rather indexes metadata - set of labels, that form basis for a **log-stream**;
+  - pull instead of push;
+  - log-stream is a set of logs with same labels - quality set of labels is key to efficient query execution;
+  - stored in **chunks** in an object store (Amazon S3, GCS, filesystem, ...);
+    - small index + highly compressed chunks == cost-efficiency;
+  - features
+    - scalability => can scale from raspberry pi to ingesting petabytes a day; few deployment modes, native microservices with kubernetes;
+    - multi-tenant => requests and data between tenants is completely isolated;
+    - third-party integrations => has a lot of plugins;
+    - efficient storage => labels and chunks, mentioned earlier;
+    - LogQL => similar to PromQL, flexible, can generate metrics from logs;
+    - alerting => has a component called ruler;
+    - integrates with Grafana ecosystem (Grafana, Tempo, Mimir, ...);
+
+#### Ideja
+
+- Python "odasiljac" logova skinutih sa servera;
+- Logstash ingester;
+- Logovi se salju u ECS i Loki;
+  - Kako da se salju u ECS?
+    - kako da ih obradim da bi ih efikasno spremio za cuvanje i query;
+  - Kako da se salju u Loki?
+    - kako da ih obradim da bi ih efikasno spremio za cuvanje i query;
+- Obrada citanjem iz Lokija
+- Izvestaji (batch obrada, recimo na kraju dana...) - Airflow;
+- Realtime obrada sa Spark;
 
 ## Literatura
 
-- Books:
-  1. [Understanding Log Analytics at Scale](https://www.oreilly.com/library/view/understanding-log-analytics/9781098104269/) [ ]
-  2. [Smart Log Data Analytics](https://www.amazon.com/Smart-Log-Data-Analytics-Techniques/dp/3030744523) [ ]
-  3. [Logging and Log Management](https://www.amazon.com/Logging-Log-Management-Authoritative-Understanding/dp/1597496359/ref=as_li_ss_tl?ie=UTF8&linkCode=sl1&tag=solutionsre04-20&linkId=98e5ad60200d86a0e18caf8e69e1a28e) [ ]
+- Knjige:
+  1. [Logging and Log Management](https://www.amazon.com/Logging-Log-Management-Authoritative-Understanding/dp/1597496359/ref=as_li_ss_tl?ie=UTF8&linkCode=sl1&tag=solutionsre04-20&linkId=98e5ad60200d86a0e18caf8e69e1a28e) [ ]
+  2. [Understanding Log Analytics at Scale](https://www.oreilly.com/library/view/understanding-log-analytics/9781098104269/) [ ]
+  3. [Smart Log Data Analytics](https://www.amazon.com/Smart-Log-Data-Analytics-Techniques/dp/3030744523) [ ]
   4. [Security Information and Event Management (SIEM) Implementation](https://www.amazon.com/Security-Information-Management-Implementation-Network/dp/0071701095/ref=as_li_ss_tl?s=books&ie=UTF8&qid=1442846013&sr=1-1&keywords=security+information+and+event+management&linkCode=sl1&tag=solutionsre04-20&linkId=66961f320d0ec4ab49b748362219dfeb) [ ]
   5. [Security Metrics A Beginners Guide](https://www.amazon.com/Security-Metrics-Beginners-Guide-Caroline/dp/0071744002/ref=as_li_ss_tl?s=books&ie=UTF8&qid=1444137396&sr=1-11&keywords=security+information+and+event+management&linkCode=sl1&tag=solutionsre04-20&linkId=20f9888ff19c5cb4415e0c62e7a20d55) [ ]
   6. [Data, Driven Security: Analysis, Visualization and Dashboards](https://www.amazon.com/Data-Driven-Security-Analysis-Visualization-Dashboards/dp/1118793722/ref=as_li_ss_tl?s=books&ie=UTF8&qid=1442851032&sr=1-3&keywords=SIEM&linkCode=sl1&tag=solutionsre04-20&linkId=fcccfdc5576db9f439df1969fcfd77d6) [ ]
   7. [Network Security Through Data Analysis: Building Situational Awareness](https://www.amazon.com/Network-Security-Through-Data-Analysis/dp/1449357903/ref=as_li_ss_tl?s=books&ie=UTF8&qid=1442860785&sr=1-5&keywords=siem&linkCode=sl1&tag=solutionsre04-20&linkId=9c97c58539771d28d0933e2c21934d39) [ ]
   8. [NIST - Guide to Computer Security, Log Management](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-92.pdf) [x]
-  9. [Data Analytics at Scale](https://www.oreilly.com/library/view/data-management-at/9781492054771/) - supplementary [ ]
-  10. [Fundamentals of Data Visualization](https://www.oreilly.com/library/view/fundamentals-of-data/9781492031079/) - supplementary [ ]
 
-- Papers:
-  1. [Toward the Observability of Cloud-Native Applications: The Overview of the State-of-the-Art](https://ieeexplore.ieee.org/document/10141603);
+- Dodatne knjige
+  1. [The Art of Monitoring](https://artofmonitoring.com/) [x]
+     - Ima fin teoretski uvod o monitoringu, sa nekim sistematizacijama;
+     - Ima kompletan primer implementiranog sistema;
+     - Tehnologije - Riemann, Graphite, Grafana, Logstash, Elasticsearch, Kibana, ...
+  2. [Observability Engineering](https://info.honeycomb.io/observability-engineering-oreilly-book-2022) [x]
+     - Puno teoretskog i apstraktnog o svemu - biblija za observability teoriju, ulazi cak i u neke kulturoloske aspekte;
+     - Zanimljivosti o telemetry pipeline-ima;
+  3. [The Future of Observability with OpenTelemetry](https://www.oreilly.com/library/view/the-future-of/9781098118433/) [x]
+     - O OTel-u, instrumentaciji;
+     - Nista specijalno, ako ne radis sa OTel-om;
+  4. [Software Telemetry - reliable logging and monitoring](https://www.manning.com/books/software-telemetry) [x]
+     - Jako dobar uvod, sadrži objašnjenja o SIEM-u (i neke fine statističke informacije);
+     - VRLO DOBRO - SIEM Splunk primer - da li ovo može da bude ideja?
+     - konzumiranje telemetrije od strane različitih timova;
+     - **Displaying telemetry in centralized logging systems**;
+     - zanimljive stvari o regexima ("at scale");
+     - kardinalnost;
+       - cardinality in logging databases;
+     - Elastic vs Loki?
+       - what Elasticsearch is good at;
+       - what Loki is good at;
+  5. [The Fundamentals of Telemetry Pipelines](https://www.oreilly.com/library/view/the-fundamentals-of/9781098153878/) [x]
+     - Nista specijalno, vise kao pricica;
+  6. [Data Analytics at Scale](https://www.oreilly.com/library/view/data-management-at/9781492054771/) [ ]
+  7. [Fundamentals of Data Visualization](https://www.oreilly.com/library/view/fundamentals-of-data/9781492031079/) [ ]
 
-- Web sites:
+- Naucni radovi:
+  1. [Toward the Observability of Cloud-Native Applications: The Overview of the State-of-the-Art](https://ieeexplore.ieee.org/document/10141603) [ ]
+  2. [Anomaly Detection from Log Files Using Data Mining Techniques](https://link.springer.com/chapter/10.1007/978-3-662-46578-3_53) [x]
+     - Zanimljiv teoretski uvod;
+     - Ima dobre reference za dalje istrazivanje - u pogledu nacina intrusion-detection analize i obrade logova;
+     - Hadoop, odnosno MR obrada datasetova radi detekcije anomalija;
+
+- Web sajtovi:
   1. [Log Formats - a (Mostly) Complete Guide](https://graylog.org/post/log-formats-a-complete-guide/) [x]
      1. [Using Trend Analysis for Better Insights](https://graylog.org/post/using-trend-analysis-for-better-insights/) [x]
      2. [Must-Have Features for Your Log Management Software](https://graylog.org/post/must-have-features-for-your-log-management-software/) [x]

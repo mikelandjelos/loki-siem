@@ -1,0 +1,53 @@
+networks:
+  loki-siem:
+    driver: bridge
+    name: loki_siem
+
+services:
+  # ---------------------------------------------------------------------------------------------------------
+  # AGENT - Logstash
+  # ---------------------------------------------------------------------------------------------------------
+  logstash:
+    image: logstash-with-loki
+    container_name: logstash
+    ports:
+      - 5044:5044
+    volumes:
+      - ./logstash/pipeline/:/usr/share/logstash/pipeline/:ro
+      - ./logstash/logs/:/usr/share/logstash/logs/
+    depends_on:
+      - loki
+    networks:
+      - loki-siem
+
+  # ---------------------------------------------------------------------------------------------------------
+  # DATABASE - Loki
+  # ---------------------------------------------------------------------------------------------------------
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - 3100:3100
+    environment:
+      - STORAGE_PATH=/loki
+    volumes:
+      - ./loki/loki-local-config.yaml:/etc/loki/loki-local-config.yaml
+    command:
+      - "--config.file=/etc/loki/loki-local-config.yaml"
+      - "--config.expand-env=true"
+    networks:
+      - loki-siem
+
+  # ---------------------------------------------------------------------------------------------------------
+  # VISUALIZATION - Grafana
+  # ---------------------------------------------------------------------------------------------------------
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana/config/grafana.ini:/etc/grafana/grafana.ini:ro
+      - ./grafana/provisioning:/etc/grafana/provisioning/
+    networks:
+      - loki-siem

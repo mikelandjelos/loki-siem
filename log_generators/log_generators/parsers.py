@@ -2,7 +2,7 @@ import csv
 import json
 import string
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional
 
 from dateutil.parser import parse
@@ -59,7 +59,7 @@ def logfile_to_logstream(
             )
 
             time.sleep(sleep_duration)
-            row[timestamp_label] = datetime.now().isoformat()
+            row[timestamp_label] = datetime.now(timezone.utc).isoformat()
             yield json.dumps(row)
 
             old_timestamp = new_timestamp
