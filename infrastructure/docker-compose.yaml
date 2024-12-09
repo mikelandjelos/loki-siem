@@ -14,7 +14,6 @@ services:
       - 5044:5044
     volumes:
       - ./logstash/pipeline/:/usr/share/logstash/pipeline/:ro
-      - ./logstash/logs/:/usr/share/logstash/logs/
     depends_on:
       - loki
     networks:
@@ -31,7 +30,7 @@ services:
     environment:
       - STORAGE_PATH=/loki
     volumes:
-      - ./loki/loki-local-config.yaml:/etc/loki/loki-local-config.yaml
+      - ./loki/loki-local-config.yaml:/etc/loki/loki-local-config.yaml:ro
     command:
       - "--config.file=/etc/loki/loki-local-config.yaml"
       - "--config.expand-env=true"

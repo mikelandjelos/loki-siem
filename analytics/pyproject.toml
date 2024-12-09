@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "analytics"
+version = "0.1.0"
+description = ""
+authors = ["Mihajlo Madic <mihajlo.madic@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+scikit-learn = "^1.5.2"
+websockets = "^14.1"
+pydantic = "^2.10.3"
+aiofiles = "^24.1.0"
+numpy = "^2.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

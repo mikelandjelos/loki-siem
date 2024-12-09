@@ -1,0 +1,36 @@
+WARNING:root:Streaming logs...
+Traceback (most recent call last):
+  File "/home/mih/Mihajlo/diplomski/loki-siem/analytics/main.py", line 176, in <module>
+    asyncio.run(log_processing_pipeline(pipeline_stages))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mih/.pyenv/versions/3.13.0/lib/python3.13/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/home/mih/.pyenv/versions/3.13.0/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/home/mih/.pyenv/versions/3.13.0/lib/python3.13/asyncio/base_events.py", line 721, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/mih/Mihajlo/diplomski/loki-siem/analytics/main.py", line 160, in log_processing_pipeline
+    await result
+  File "/home/mih/Mihajlo/diplomski/loki-siem/analytics/main.py", line 109, in clusterize_logs
+    batch_data /= np.std(batch_data, axis=0, ddof=0) + 1e-8
+                  ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mih/.pyenv/versions/3.13.0/envs/loki_siem/lib/python3.13/site-packages/numpy/_core/fromnumeric.py", line 4064, in std
+    return _methods._std(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         **kwargs)
+                         ^^^^^^^^^
+  File "/home/mih/.pyenv/versions/3.13.0/envs/loki_siem/lib/python3.13/site-packages/numpy/_core/_methods.py", line 223, in _std
+    ret = _var(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+               keepdims=keepdims, where=where, mean=mean)
+  File "/home/mih/.pyenv/versions/3.13.0/envs/loki_siem/lib/python3.13/site-packages/numpy/_core/_methods.py", line 203, in _var
+    x = um.multiply(x, um.conjugate(x), out=x).real
+        ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mih/.pyenv/versions/3.13.0/envs/loki_siem/lib/python3.13/site-packages/scipy/sparse/_matrix.py", line 44, in __mul__
+    return self._matmul_dispatch(other)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/mih/.pyenv/versions/3.13.0/envs/loki_siem/lib/python3.13/site-packages/scipy/sparse/_base.py", line 579, in _matmul_dispatch
+    raise ValueError('dimension mismatch')
+ValueError: dimension mismatch
