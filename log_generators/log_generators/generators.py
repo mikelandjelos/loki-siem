@@ -1,3 +1,4 @@
+import logging
 from concurrent.futures import ThreadPoolExecutor
 from logging import INFO, Handler, Logger, getLogger
 from os.path import abspath, exists
@@ -42,4 +43,8 @@ def start_generators(
         max_workers=num_of_threads,
         thread_name_prefix="generator",
     ) as executor:
-        executor.map(generate_logs, configs)
+        try:
+            for _ in executor.map(generate_logs, configs):
+                pass
+        except Exception as exc:
+            logging.fatal(exc)

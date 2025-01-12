@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import os
 import urllib
 import urllib.parse
 from datetime import datetime, timezone
@@ -15,6 +16,10 @@ from pydantic import BaseModel
 from scipy.sparse import spmatrix
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
+
+RESULTS_PATH = (
+    f"results/analysis_{datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")}"
+)
 
 
 def loki_ready(address: str = "localhost:3100"):
@@ -81,10 +86,8 @@ async def clusterize_logs(logs_stream: AsyncIterator[list[str]]):
 
     buffer: list[str] = []
     batch_counter = 0
-    first_batch = True  # Flag to track the first batch
-    batch_size_threshold = (
-        100  # Number of batches to process before updating the vectorizer
-    )
+    first_batch = True
+    batch_size_threshold = 100
 
     async for logs in logs_stream:
         for log in logs:
@@ -114,13 +117,15 @@ async def clusterize_logs(logs_stream: AsyncIterator[list[str]]):
                     "log": log,
                     "cluster": int(label),
                     "feature_vector": feature.tolist(),
-                    "timestamp": datetime.now(timezone.utc),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
                 for log, label, feature in zip(buffer, labels, batch_data)
             ]
 
             timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-            output_file = f"./logs/pipeline/batch_{timestamp}_{batch_counter}.json"
+            output_file = os.path.join(
+                RESULTS_PATH, f"batch_{timestamp}_{batch_counter}.json"
+            )
 
             async with aiofiles.open(output_file, "a") as file:
                 await file.write(json.dumps(clustered_logs, default=str))
@@ -145,19 +150,16 @@ async def log_processing_pipeline(
     if not stages:
         raise ValueError("Pipeline stages cannot be empty")
 
-    # Initialize the first stage
     first_stage_func, first_args, first_kwargs = stages[0]
     result = first_stage_func(*first_args, **first_kwargs)
 
-    # Connect the stages
     for stage_func, stage_args, stage_kwargs in stages[1:]:
         result = stage_func(result, *stage_args, **stage_kwargs)
 
-    # Consume the final stage to ensure full execution
     await result
 
 
-if __name__ == "__main__":
+def main():
     logging.basicConfig(level=logging.INFO)
 
     while not loki_ready():
@@ -170,4 +172,10 @@ if __name__ == "__main__":
         (clusterize_logs, (), {}),
     ]
 
+    os.mkdir(RESULTS_PATH)
+
     asyncio.run(log_processing_pipeline(pipeline_stages))
+
+
+if __name__ == "__main__":
+    main()

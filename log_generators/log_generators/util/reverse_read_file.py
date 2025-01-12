@@ -16,7 +16,7 @@ def reversed_lines(file: TextIOWrapper) -> Generator[str, Any, None]:
         yield part[::-1]
 
 
-def reversed_blocks(file: TextIOWrapper, blocksize: int = 8192):
+def reversed_blocks(file: TextIOWrapper, blocksize: int = 8192 * 2):
     "Generate blocks of file's contents in reverse order."
     file.seek(0, os.SEEK_END)
     here = file.tell()

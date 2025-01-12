@@ -3,9 +3,9 @@
 ## Zadatak
 
 - [x] Upoznati se sa formatima, nacinom cuvanja i predstavljanja logova
-- [ ] Prouciti Loki platformu za prikupljanje sistemskih logova i mogucnosti integracije u ELK stek
-  - [ ] Posebno sagledati mogucnosti integracije Logstash i Loki platforme
-- [ ] Projektovati arhitekturu sistema baziranog na ELK steku i Loki platformi za prikupljanje i bezbednosnu analizu sistemskih logova
+- [x] Prouciti Loki platformu za prikupljanje sistemskih logova i mogucnosti integracije u ELK stek
+  - [x] Posebno sagledati mogucnosti integracije Logstash i Loki platforme
+- [x] Projektovati arhitekturu sistema baziranog na ELK steku i Loki platformi za prikupljanje i bezbednosnu analizu sistemskih logova
 - [ ] Implementirati aplikaciju za analizu logova
   - [ ] Aplikaciju implementirati tako da podatke cita sa Loki platforme i ima mogucnost vizuelizacije rezultata u Grafani
   - [ ] Koristiti kontejnerizovane servise

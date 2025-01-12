@@ -13,6 +13,8 @@ pydantic = "^2.9.2"
 tomli = "^2.1.0"
 validators = "^0.34.0"
 
+[tool.poetry.scripts]
+log-generators = "main:main"
 
 [build-system]
 requires = ["poetry-core"]
