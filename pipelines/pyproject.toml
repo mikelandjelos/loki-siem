@@ -16,6 +16,7 @@ dependencies = [
 
 [tool.poetry.scripts]
 drain="pipelines.parsing.drain.drain:main"
+drain3="pipelines.parsing.drain3.drain3:main"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
