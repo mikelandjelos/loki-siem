@@ -1,0 +1,22 @@
+[project]
+name = "pipelines"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "mikelandjelos",email = "mihajlo.madic@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13,<4.0"
+dependencies = [
+    "regex (==2022.3.2)",
+    "logparser3 (>=1.0.4,<2.0.0)",
+    "cachetools (==4.2.1)",
+    "drain3 (>=0.9.11,<0.10.0)"
+]
+
+[tool.poetry.scripts]
+drain="pipelines.parsing.drain.drain:main"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

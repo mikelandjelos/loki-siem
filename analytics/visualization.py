@@ -3,6 +3,7 @@ import os
 
 import pandas as pd
 import plotly.express as px
+from sklearn.decomposition import PCA
 
 
 def load_clustered_logs(results_path: str) -> pd.DataFrame:
@@ -25,8 +26,6 @@ def generate_html_report(df: pd.DataFrame, output_path: str):
         labels={"x": "Cluster", "y": "Number of Logs"},
         title="Cluster Distribution",
     )
-
-    from sklearn.decomposition import PCA
 
     features = pd.DataFrame(df["feature_vector"].tolist())
     pca = PCA(n_components=2)
