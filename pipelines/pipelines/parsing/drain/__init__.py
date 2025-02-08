@@ -1,5 +1,6 @@
-from .drain import benchmark
+from . import configs
+from .drain import drain_parsing_benchmark
 
 __all__ = [
-    "benchmark",
+    "drain_parsing_benchmark",
 ]

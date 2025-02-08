@@ -1,11 +1,13 @@
+import logging
 import os
 from dataclasses import asdict
+from time import perf_counter_ns
 
 from logparser import Drain
 
-from .apache_2k_config import APACHE_2K_CONFIG
-from .apache_elfak_config import APACHE_ELFAK_CONFIG
-from .common import RESULTS_ROOT_DIR, DrainConfig
+from .configs import CONFIGS, RESULTS_ROOT_DIR, DrainConfig
+
+__logger = logging.getLogger(__name__)
 
 
 def parse_logs(parser_config: DrainConfig, logfile: str):
@@ -13,17 +15,22 @@ def parse_logs(parser_config: DrainConfig, logfile: str):
     parser.parse(logName=logfile)
 
 
-def benchmark():
-    parse_logs(APACHE_2K_CONFIG, "Apache_2k.log")
-    parse_logs(APACHE_ELFAK_CONFIG, "Access Logs-data-2024-10-11 10_22_32.log")
+def drain_parsing_benchmark(configs: dict[str, tuple[DrainConfig, str]]):
+    for config_name, (config, log_file) in configs.items():
+        start = perf_counter_ns()
+        parse_logs(config, log_file)
+        end = perf_counter_ns()
+        __logger.info(f"Finished parsing: `{config_name}` [{end - start/1000}us]")
 
 
 def main():
+    __logger.setLevel(logging.INFO)
+
     if not os.path.exists(RESULTS_ROOT_DIR):
         os.mkdir(RESULTS_ROOT_DIR)
-        os.mkdir(os.path.join(RESULTS_ROOT_DIR), "drain")
+        os.mkdir(os.path.join(RESULTS_ROOT_DIR, "drain"))
 
-    benchmark()
+    drain_parsing_benchmark(CONFIGS)
 
 
 if __name__ == "__main__":
