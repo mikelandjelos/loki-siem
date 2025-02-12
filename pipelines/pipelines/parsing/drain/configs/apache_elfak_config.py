@@ -1,4 +1,4 @@
-from os import path
+from os import mkdir, path
 
 from .common import COMMON_PATTERNS, RESULTS_ROOT_DIR, DrainConfig
 
