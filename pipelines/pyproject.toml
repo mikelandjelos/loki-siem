@@ -11,7 +11,8 @@ dependencies = [
     "regex (==2022.3.2)",
     "logparser3 (>=1.0.4,<2.0.0)",
     "cachetools (==4.2.1)",
-    "drain3 (>=0.9.11,<0.10.0)"
+    "drain3 (>=0.9.11,<0.10.0)",
+    "pandas (>=2.2.3,<3.0.0)"
 ]
 
 [tool.poetry.scripts]
