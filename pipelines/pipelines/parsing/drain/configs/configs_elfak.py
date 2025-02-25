@@ -6,12 +6,15 @@ from pipelines.parsing.drain.configs.common import (
     DrainConfig,
 )
 
-CONFIGS_NONLABELED = {
-    "Apache Elfak": (
+OUTDIR_ELFAK = path.join(RESULTS_ROOT_DIR, "drain", "elfak")
+INDIR_ELFAK = path.join("data", "elfak")
+
+CONFIGS_ELFAK = {
+    "Apache": (
         DrainConfig(
             log_format=r"<ClientAddress> - - \[<Timestamp>\] \"<Content>\" <_StatusCode> <_ResponseBytes> \"<Referer>\" \"<UserAgent>\"",
-            indir="data/24h/",
-            outdir=path.join(RESULTS_ROOT_DIR, "drain/"),
+            indir=path.join(INDIR_ELFAK, "24h"),
+            outdir=OUTDIR_ELFAK,
             rex=COMMON_PATTERNS,
             st=0.4,
             depth=4,

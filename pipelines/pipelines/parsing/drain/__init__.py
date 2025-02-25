@@ -1,7 +1,8 @@
 from . import configs
-from .drain import drain_parse_benchmark
+from .drain import drain_benchmark, drain_parse
 
 __all__ = [
-    "drain_parse_benchmark",
+    "drain_benchmark",
+    "drain_parse",
     "configs",
 ]
