@@ -1,9 +1,12 @@
+import argparse
 import json
 import logging
 import os
 import sys
 import time
+from datetime import datetime
 from os.path import dirname
+from typing import Optional
 
 from drain3 import TemplateMiner
 from drain3.template_miner_config import TemplateMinerConfig
@@ -14,8 +17,29 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(message)s")
 LOG_DIR = "data/misc/"
 LOG_FILE = "SSH.log"
 
+RESULTS_ROOT_DIR = os.path.join(os.path.dirname(__file__), "results")
 
-def main():
+
+def get_parser(parent_subparsers: Optional[argparse._SubParsersAction] = None):
+    """Drain3 log parser (production ready Drain)."""
+    parser = (
+        argparse.ArgumentParser(description=get_parser.__doc__)
+        if not parent_subparsers
+        else parent_subparsers.add_parser("drain3", description=get_parser.__doc__)
+    )
+
+    parser.set_defaults(func=main)
+
+    return parser
+
+
+def main(args: Optional[argparse.Namespace] = None):
+    if not os.path.exists(RESULTS_ROOT_DIR):
+        os.makedirs(RESULTS_ROOT_DIR)
+
+    if not args:
+        args = get_parser().parse_args()
+
     config = TemplateMinerConfig()
     config.load(f"{dirname(__file__)}/drain3.ini")
     config.profiling_enabled = True
@@ -23,7 +47,9 @@ def main():
 
     line_count = 0
 
-    with open(os.path.join(LOG_DIR, LOG_FILE)) as f:
+    logfile_path = os.path.join(LOG_DIR, LOG_FILE)
+
+    with open(logfile_path) as f:
         lines = f.readlines()
 
     start_time = time.time()
@@ -62,7 +88,13 @@ def main():
         logger.info(cluster)
 
     print("Prefix Tree:")
-    with open(os.path.join(dirname(__name__), "tree.txt"), "wt") as f:
+    with open(
+        os.path.join(
+            RESULTS_ROOT_DIR,
+            f"tree-{os.path.splitext(os.path.basename(logfile_path))}-{datetime.isoformat(datetime.now())}Z.txt",
+        ),
+        "wt",
+    ) as f:
         template_miner.drain.print_tree(f)
 
     template_miner.profiler.report(0)

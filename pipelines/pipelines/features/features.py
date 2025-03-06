@@ -15,8 +15,7 @@ DATA_PATHS: list[tuple[str, str, str]] = [
 
 def main():
     if not exists("results"):
-        makedirs(RESULTS_BASE_PATH)
-        makedirs(join(RESULTS_BASE_PATH, "windowing"))
+        makedirs(join(RESULTS_BASE_PATH, "windowing"), exist_ok=True)
 
     for path, timestamp_label, timestamp_format in DATA_PATHS:
         path_with_base = join(BASE_PATH, path)

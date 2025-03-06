@@ -1,11 +1,14 @@
+import os
 from dataclasses import dataclass, field
+
+RESULTS_ROOT_DIR = os.path.join(os.path.dirname(__file__), os.path.pardir, "results")
 
 
 @dataclass(frozen=True)
 class DrainConfig:
     log_format: str
-    indir: str = "./"
-    outdir: str = "./result/"
+    indir: str = os.curdir
+    outdir: str = RESULTS_ROOT_DIR
     depth: int = 4
     st: float = 0.4
     maxChild: int = 100
@@ -19,5 +22,3 @@ COMMON_PATTERNS = [  # Common patterns found in logs
     r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",  # Email
     r"[1-5][0-9]{2}",  # Http Status codes
 ]
-
-RESULTS_ROOT_DIR = "results"

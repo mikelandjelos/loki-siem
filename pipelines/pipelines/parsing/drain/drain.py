@@ -7,6 +7,7 @@ import logging
 import os
 from dataclasses import asdict
 from time import perf_counter_ns
+from typing import Optional
 
 import pandas as pd
 from logparser import Drain
@@ -54,34 +55,43 @@ def drain_benchmark(configs: dict[str, tuple[DrainConfig, str]]):
         print(df_benchmark)
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Log parsing and anomaly detection with benchmarking."
+def get_parser(parent_subparsers: Optional[argparse._SubParsersAction] = None):
+    "Drain log parser."
+    parser = (
+        argparse.ArgumentParser(description=get_parser.__doc__)
+        if not parent_subparsers
+        else parent_subparsers.add_parser("drain", description=get_parser.__doc__)
     )
-    parser.add_argument("--benchmarks", action="store_true", help="Run benchmarks")
-    parser.add_argument("--parsing", action="store_true", help="Run log parsing")
-    return parser.parse_args()
+    parser.add_argument(
+        "--loghub2k",
+        action="store_true",
+        help="Parse Loghub2k datasets, store results and output benchmarks.",
+    )
+    parser.add_argument(
+        "--elfak", action="store_true", help="Parse Elfak datasets and store results."
+    )
+    parser.set_defaults(func=main)
+    return parser
 
 
-def main():
+def main(args: Optional[argparse.Namespace] = None):
     __logger.setLevel(logging.INFO)
 
     if not os.path.exists(RESULTS_ROOT_DIR):
-        os.mkdir(RESULTS_ROOT_DIR)
-        os.mkdir(os.path.join(RESULTS_ROOT_DIR, "drain"))
+        os.makedirs(RESULTS_ROOT_DIR, exist_ok=True)
+        os.makedirs(OUTDIR_2K, exist_ok=True)
+        os.makedirs(OUTDIR_ELFAK, exist_ok=True)
 
-        os.mkdir(OUTDIR_2K)
-        os.mkdir(OUTDIR_ELFAK)
-
-    args = parse_args()
+    if not args:
+        args = get_parser().parse_args()
 
     # Benchmarking LogHub2k datasets.
-    if args.benchmarks:
+    if args.loghub2k:
         drain_parse(CONFIGS_2K)
         drain_benchmark(CONFIGS_2K)
 
-    # Parsing Elfak datasets.
-    if args.parsing:
+    # Parsing Elfak proprietary datasets.
+    if args.elfak:
         drain_parse(CONFIGS_ELFAK)
 
 
