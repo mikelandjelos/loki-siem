@@ -12,12 +12,15 @@ dependencies = [
     "logparser3 (>=1.0.4,<2.0.0)",
     "cachetools (==4.2.1)",
     "drain3 (>=0.9.11,<0.10.0)",
-    "pandas (>=2.2.3,<3.0.0)"
+    "pandas (>=2.2.3,<3.0.0)",
+    "seaborn (>=0.13.2,<0.14.0)"
 ]
 
 [tool.poetry.scripts]
 parsing="pipelines.parsing.parsing:main"
 features="pipelines.features.features:main"
+anomalies="pipelines.anomalies.anomalies:main"
+visualization="pipelines.visualization.visualization:main"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

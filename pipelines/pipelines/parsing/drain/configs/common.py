@@ -1,14 +1,14 @@
 import os
 from dataclasses import dataclass, field
 
-RESULTS_ROOT_DIR = os.path.join(os.path.dirname(__file__), os.path.pardir, "results")
+RESULTS_DIR = os.path.join(os.path.dirname(__file__), os.path.pardir, "results")
 
 
 @dataclass(frozen=True)
 class DrainConfig:
     log_format: str
     indir: str = os.curdir
-    outdir: str = RESULTS_ROOT_DIR
+    outdir: str = RESULTS_DIR
     depth: int = 4
     st: float = 0.4
     maxChild: int = 100

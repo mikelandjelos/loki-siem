@@ -1,5 +1,9 @@
 """
-Used to benchmark Drain for log parsing. Parsed datasets are used for downstream tasks - feature extraction and anomaly detection.
+Drain Log parser:
+    - CLI argument parsing;
+    - DRAIN log parsing;
+    - DRAIN loghub2k datasets benchmarks;
+    - DRAIN proprietary datasets parsing.
 """
 
 import argparse
@@ -18,9 +22,10 @@ from .configs import (
     CONFIGS_ELFAK,
     OUTDIR_2K,
     OUTDIR_ELFAK,
-    RESULTS_ROOT_DIR,
+    RESULTS_DIR,
     DrainConfig,
 )
+from .util import rename_files
 
 __logger = logging.getLogger(__name__)
 
@@ -77,8 +82,8 @@ def get_parser(parent_subparsers: Optional[argparse._SubParsersAction] = None):
 def main(args: Optional[argparse.Namespace] = None):
     __logger.setLevel(logging.INFO)
 
-    if not os.path.exists(RESULTS_ROOT_DIR):
-        os.makedirs(RESULTS_ROOT_DIR, exist_ok=True)
+    if not os.path.exists(RESULTS_DIR):
+        os.makedirs(RESULTS_DIR, exist_ok=True)
         os.makedirs(OUTDIR_2K, exist_ok=True)
         os.makedirs(OUTDIR_ELFAK, exist_ok=True)
 
@@ -90,9 +95,11 @@ def main(args: Optional[argparse.Namespace] = None):
         drain_parse(CONFIGS_2K)
         drain_benchmark(CONFIGS_2K)
 
-    # Parsing Elfak proprietary datasets.
+    # Parsing proprietary datasets.
     if args.elfak:
         drain_parse(CONFIGS_ELFAK)
+
+    rename_files(RESULTS_DIR)
 
 
 if __name__ == "__main__":

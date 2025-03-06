@@ -2,11 +2,11 @@ from os import path
 
 from pipelines.parsing.drain.configs.common import (
     COMMON_PATTERNS,
-    RESULTS_ROOT_DIR,
+    RESULTS_DIR,
     DrainConfig,
 )
 
-OUTDIR_ELFAK = path.join(RESULTS_ROOT_DIR, "elfak")
+OUTDIR_ELFAK = path.join(RESULTS_DIR, "elfak")
 INDIR_ELFAK = path.join("data", "elfak")
 
 CONFIGS_ELFAK = {

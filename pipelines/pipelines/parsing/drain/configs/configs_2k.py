@@ -1,8 +1,8 @@
 from os import path
 
-from .common import RESULTS_ROOT_DIR, DrainConfig
+from .common import RESULTS_DIR, DrainConfig
 
-OUTDIR_2K = path.join(RESULTS_ROOT_DIR, "loghub_2k")
+OUTDIR_2K = path.join(RESULTS_DIR, "loghub_2k")
 INDIR_2K = path.join("data", "loghub_2k")
 
 # <semantic_name>: (<config_object>, <log_file>)

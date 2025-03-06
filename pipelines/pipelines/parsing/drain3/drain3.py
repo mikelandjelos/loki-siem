@@ -17,7 +17,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(message)s")
 LOG_DIR = "data/misc/"
 LOG_FILE = "SSH.log"
 
-RESULTS_ROOT_DIR = os.path.join(os.path.dirname(__file__), "results")
+RESULTS_DIR = os.path.join(os.path.dirname(__file__), "results")
 
 
 def get_parser(parent_subparsers: Optional[argparse._SubParsersAction] = None):
@@ -34,8 +34,8 @@ def get_parser(parent_subparsers: Optional[argparse._SubParsersAction] = None):
 
 
 def main(args: Optional[argparse.Namespace] = None):
-    if not os.path.exists(RESULTS_ROOT_DIR):
-        os.makedirs(RESULTS_ROOT_DIR)
+    if not os.path.exists(RESULTS_DIR):
+        os.makedirs(RESULTS_DIR)
 
     if not args:
         args = get_parser().parse_args()
@@ -90,8 +90,8 @@ def main(args: Optional[argparse.Namespace] = None):
     print("Prefix Tree:")
     with open(
         os.path.join(
-            RESULTS_ROOT_DIR,
-            f"tree-{os.path.splitext(os.path.basename(logfile_path))}-{datetime.isoformat(datetime.now())}Z.txt",
+            RESULTS_DIR,
+            f"tree-{os.path.splitext(os.path.basename(logfile_path))[0]}-{datetime.isoformat(datetime.now())}Z.txt",
         ),
         "wt",
     ) as f:

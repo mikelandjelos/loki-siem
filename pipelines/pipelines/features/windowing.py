@@ -1,4 +1,12 @@
+from warnings import warn
+
 import pandas as pd
+
+warn(
+    "In the collection stage - make formats, and labels uniform, so that additional "
+    + "parameters (such as `timestamp_label` and `timestamp_format` can be excluded from "
+    + "the pipeline (dataflow) code."
+)
 
 
 def fixed_time_window(
