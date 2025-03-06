@@ -1,3 +1,7 @@
+"""
+Used to benchmark Drain for log parsing. Parsed datasets are used for downstream tasks - feature extraction and anomaly detection.
+"""
+
 import argparse
 import logging
 import os
@@ -76,7 +80,7 @@ def main():
         drain_parse(CONFIGS_2K)
         drain_benchmark(CONFIGS_2K)
 
-    # Parsing Elfak datasets for downstream tasks (anomaly detection).
+    # Parsing Elfak datasets.
     if args.parsing:
         drain_parse(CONFIGS_ELFAK)
 
