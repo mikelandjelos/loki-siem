@@ -1,4 +1,3 @@
-from os import makedirs, pardir
 from os.path import exists, join
 
 import pandas as pd
@@ -22,8 +21,8 @@ def main():
 
         pca_anomalies_df = pca_subspace_anomaly_detection(
             event_count_matrix,
-            variance_threshold=0.9,
-            alpha=0.001,
+            variance_threshold=0.8,
+            alpha=0.01,
         )
         dataset_name = f"{dataset_name}_pca"
         dataset_to_csv(pca_anomalies_df, RESULTS_DIR, dataset_name)

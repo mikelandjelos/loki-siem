@@ -31,7 +31,7 @@ def main():
             df,
             timestamp_label,
             timestamp_format,
-            window_size="2min",
+            window_size="5min",
         )
 
         # TODO: Add sliding and session windows.
