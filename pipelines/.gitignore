@@ -184,3 +184,5 @@ tree.txt
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+clean.sh
