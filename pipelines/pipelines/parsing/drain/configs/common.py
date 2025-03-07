@@ -1,12 +1,7 @@
 import os
 from dataclasses import dataclass, field
 
-RESULTS_DIR = os.path.join(
-    os.path.dirname(__file__),
-    os.path.pardir,
-    os.path.pardir,
-    "results",
-)
+RESULTS_DIR = os.path.join("results", "parsing", "drain")
 
 
 @dataclass(frozen=True)

@@ -12,30 +12,8 @@ from .plots import (
     plot_tsne,
 )
 
-RESULTS_DIR = join(dirname(__file__), "results")
-INPUT_DIR = join(dirname(__file__), pardir, "anomalies", "results")
-
-
-def calculate_statistics(anomaly_df: pd.DataFrame) -> dict[str, int | float]:
-    """
-    Calculate anomaly statistics.
-
-    Args:
-        anomaly_df (pd.DataFrame): DataFrame with anomaly scores and labels
-
-    Returns:
-        dict: Dictionary containing anomaly statistics
-    """
-    anomaly_scores = anomaly_df["AnomalyScore"]
-    is_anomaly = anomaly_df["IsAnomaly"]
-
-    return {
-        "total_windows": len(anomaly_df),
-        "anomaly_count": is_anomaly.sum(),
-        "anomaly_percentage": is_anomaly.mean() * 100,
-        "max_anomaly_score": anomaly_scores.max(),
-        "avg_anomaly_score": anomaly_scores.mean(),
-    }
+RESULTS_DIR = join("results", "visualization")
+INPUT_DIR = join("results", "anomalies")
 
 
 def create_plots(anomaly_results_path, output_dir=None):
@@ -107,27 +85,18 @@ def create_plots(anomaly_results_path, output_dir=None):
 
 
 def main():
-    """
-    Main function to visualize anomaly detection results.
-    """
+    for input_file in get_all_files_recursively(INPUT_DIR):
+        dataset_name = get_dataset_name(input_file)
+        input_file = join(INPUT_DIR, dataset_name, f"{dataset_name}.csv")
 
-    if not exists(RESULTS_DIR):
-        makedirs(RESULTS_DIR, exist_ok=True)
-
-    for dataset_path in get_all_files_recursively(INPUT_DIR):
-        if not exists(dataset_path):
-            print(f"Anomaly results not found at: `{dataset_path}`")
+        if not exists(input_file):
+            print(f"Anomaly detection results not found at: `{input_file}`")
             continue
 
-        dataset_name = get_dataset_name(dataset_path)
-        dataset_visualization_dir = join(RESULTS_DIR, dataset_name)
+        dataset_result_dir = join(RESULTS_DIR, dataset_name)
+        makedirs(dataset_result_dir, exist_ok=True)
 
-        if not exists(dataset_visualization_dir):
-            makedirs(dataset_visualization_dir, exist_ok=True)
-
-        print(f"Visualizing anomaly detection results for {dataset_name}...")
-        stats = create_plots(dataset_path, dataset_visualization_dir)
-        print(f"Anomaly Statistics: {stats}")
+        create_plots(input_file, dataset_result_dir)
 
 
 if __name__ == "__main__":
