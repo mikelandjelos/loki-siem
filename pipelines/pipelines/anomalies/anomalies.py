@@ -12,8 +12,7 @@ INPUT_DIR = join(dirname(__file__), pardir, "features", "results")
 
 def main():
     if not exists("results"):
-        makedirs(join(RESULTS_DIR, "loghub_2k"), exist_ok=True)
-        makedirs(join(RESULTS_DIR, "elfak"), exist_ok=True)
+        makedirs(RESULTS_DIR, exist_ok=True)
 
     for input_file in get_all_files_recursively(INPUT_DIR):
         dataset_name = get_dataset_name(input_file)
@@ -28,11 +27,12 @@ def main():
 
         pca_anomalies = pca_subspace_anomaly_detection(
             event_count_matrix,
-            variance_threshold=0.85,
-            alpha=0.05,
+            variance_threshold=0.9,
+            alpha=0.001,
         )
 
-        pca_anomalies.to_csv(join(RESULTS_DIR, f"{dataset_name}_pca.csv"))
+        makedirs(join(RESULTS_DIR, dataset_name))
+        pca_anomalies.to_csv(join(RESULTS_DIR, dataset_name, f"{dataset_name}_pca.csv"))
         print(f"PCA anomaly detection executed for `{dataset_name}`")
 
 

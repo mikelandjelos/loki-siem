@@ -17,7 +17,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(message)s")
 LOG_DIR = "data/misc/"
 LOG_FILE = "SSH.log"
 
-RESULTS_DIR = os.path.join(os.path.dirname(__file__), "results")
+RESULTS_DIR = os.path.join(os.path.dirname(__file__), os.pardir, "results")
 
 
 def get_parser(parent_subparsers: Optional[argparse._SubParsersAction] = None):

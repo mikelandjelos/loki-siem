@@ -39,8 +39,8 @@ def plot_timeseries(anomaly_df, time_based_index, output_path=None):
     )
     plt.axhline(y=threshold, color="r", linestyle="--", alpha=0.5, label="Threshold")
 
-    plt.title("Anomaly Scores Over Time")
-    plt.xlabel("Time Window" if time_based_index else "Window Index")
+    plt.title("Anomaly Scores Over Windows")
+    plt.xlabel("Window")
     plt.ylabel("Anomaly Score (SPE)")
     plt.legend()
 
