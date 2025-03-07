@@ -1,6 +1,8 @@
-from . import features, parsing
+from . import anomalies, features, parsing, visualization
 
 __all__ = [
-    "parsing",
+    "anomalies",
     "features",
+    "parsing",
+    "visualization",
 ]

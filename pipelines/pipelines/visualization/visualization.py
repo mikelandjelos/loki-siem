@@ -3,7 +3,7 @@ from os.path import dirname, exists, join
 
 import pandas as pd
 
-from ..util import get_all_files_recursively, get_dataset_name
+from .._util import get_all_files_recursively, get_dataset_name
 from .plots import (
     plot_event_correlation,
     plot_event_heatmap,

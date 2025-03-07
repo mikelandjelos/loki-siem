@@ -17,14 +17,9 @@ import pandas as pd
 from logparser import Drain
 from logparser.utils import evaluator
 
-from .configs import (
-    CONFIGS_2K,
-    CONFIGS_ELFAK,
-    OUTDIR_2K,
-    OUTDIR_ELFAK,
-    RESULTS_DIR,
-    DrainConfig,
-)
+from .configs.common import RESULTS_DIR, DrainConfig
+from .configs.configs_2k import CONFIGS_2K, OUTDIR_2K
+from .configs.configs_elfak import CONFIGS_ELFAK, OUTDIR_ELFAK
 from .util import rename_files
 
 __logger = logging.getLogger(__name__)
