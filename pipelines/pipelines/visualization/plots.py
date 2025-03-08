@@ -137,7 +137,7 @@ def plot_tsne(event_count_matrix, anomaly_scores, is_anomaly, output_path=None):
         tsne_results[:, 0],
         tsne_results[:, 1],
         c=anomaly_scores,
-        cmap="Reds",
+        cmap="viridis",
         alpha=0.7,
     )
 
@@ -147,11 +147,12 @@ def plot_tsne(event_count_matrix, anomaly_scores, is_anomaly, output_path=None):
         plt.scatter(
             tsne_results[anomaly_indices, 0],
             tsne_results[anomaly_indices, 1],
-            color="red",
-            marker="*",
-            s=150,
+            facecolors="none",  # Transparent fill
+            edgecolors="yellow",  # Red outline
+            marker="o",
+            s=200,  # Slightly larger to make it visible
+            linewidth=2,
             label="Anomaly",
-            edgecolors="black",
         )
 
     plt.colorbar(scatter, label="Anomaly Score")
