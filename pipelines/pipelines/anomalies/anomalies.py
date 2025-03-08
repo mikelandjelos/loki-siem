@@ -21,8 +21,8 @@ def main():
 
         pca_anomalies_df = pca_subspace_anomaly_detection(
             event_count_matrix,
-            variance_threshold=0.8,
-            alpha=0.01,
+            variance_threshold=0.85,
+            alpha=0.1,
         )
         dataset_name = f"{dataset_name}_pca"
         dataset_to_csv(pca_anomalies_df, RESULTS_DIR, dataset_name)

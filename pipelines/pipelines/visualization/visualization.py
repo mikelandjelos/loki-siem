@@ -39,12 +39,6 @@ def create_plots(anomaly_results_path, output_dir=None):
     anomaly_scores = anomaly_df["AnomalyScore"]
     is_anomaly = anomaly_df["IsAnomaly"]
 
-    threshold = (
-        anomaly_df.loc[anomaly_df["IsAnomaly"].idxmax(), "AnomalyScore"]
-        if any(is_anomaly)
-        else anomaly_scores.max()
-    )
-
     event_count_matrix = anomaly_df.drop(["AnomalyScore", "IsAnomaly"], axis=1)
 
     if output_dir and not exists(output_dir):
@@ -58,7 +52,6 @@ def create_plots(anomaly_results_path, output_dir=None):
 
     plot_histogram(
         anomaly_scores,
-        threshold,
         join(output_dir, "anomaly_scores_histogram.png") if output_dir else None,
     )
 

@@ -29,7 +29,11 @@ def pca_subspace_anomaly_detection(
 
     # TF-IDF preprocessing - reasoning:
     #   => common events that appear in most time windows will have less influence.
-    tfidf_transformer = TfidfTransformer(norm="l2", use_idf=True, smooth_idf=True)
+    tfidf_transformer = TfidfTransformer(
+        norm="l2",
+        use_idf=True,
+        smooth_idf=True,
+    )
     event_count_matrix = tfidf_transformer.fit_transform(
         event_count_matrix
     ).toarray()  # type: ignore
@@ -51,7 +55,7 @@ def pca_subspace_anomaly_detection(
     # Identity matrix of original space
     I = np.identity(event_counts_scaled.shape[1])
 
-    # Projection matrix to Sa
+    # Projection matrix to Sa.
     projection_matrix = I - P @ P.T
 
     # Compute projection onto anomaly space.
@@ -59,10 +63,10 @@ def pca_subspace_anomaly_detection(
     squared_prediction_error = np.linalg.norm(projections, axis=1) ** 2  # SPE = ‖ya‖^2
 
     # Compute threshold Q_alpha using chi-squared distribution.
-    # Q_alpha from chi-square
+    # Q_alpha from chi-square.
     Q_alpha = chi2.ppf(1 - alpha, df=event_counts_scaled.shape[1] - k)
 
-    # Label anomalies
+    # Label anomalies.
     event_matrix["AnomalyScore"] = squared_prediction_error
     event_matrix["IsAnomaly"] = event_matrix["AnomalyScore"] > Q_alpha
 

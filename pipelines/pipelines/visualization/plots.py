@@ -6,7 +6,7 @@ import seaborn as sns
 from sklearn.manifold import TSNE
 
 
-def plot_timeseries(anomaly_df, time_based_index, output_path=None):
+def plot_timeseries(anomaly_df: pd.DataFrame, time_based_index, output_path=None):
     """
     Plot time series of anomaly scores with anomalies highlighted.
 
@@ -32,12 +32,13 @@ def plot_timeseries(anomaly_df, time_based_index, output_path=None):
     )
 
     # Add threshold line.
-    threshold = (
-        anomaly_df.loc[anomaly_df["IsAnomaly"].idxmax(), "AnomalyScore"]
-        if any(is_anomaly)
-        else anomaly_scores.max()
-    )
-    plt.axhline(y=threshold, color="r", linestyle="--", alpha=0.5, label="Threshold")
+    anomalies = anomaly_df[anomaly_df["IsAnomaly"] == True]
+    threshold = anomalies["AnomalyScore"].min()
+    if threshold:
+        threshold -= 0.05 * threshold
+        plt.axhline(
+            y=threshold, color="r", linestyle="--", alpha=0.5, label="Threshold"
+        )
 
     plt.title("Anomaly Scores Over Windows")
     plt.xlabel("Window")
@@ -54,7 +55,7 @@ def plot_timeseries(anomaly_df, time_based_index, output_path=None):
     plt.close()
 
 
-def plot_histogram(anomaly_scores, threshold, output_path=None):
+def plot_histogram(anomaly_scores, output_path=None):
     """
     Plot histogram of anomaly scores with threshold line.
 
@@ -65,7 +66,6 @@ def plot_histogram(anomaly_scores, threshold, output_path=None):
     """
     plt.figure(figsize=(10, 5))
     sns.histplot(anomaly_scores, bins=30, kde=True)
-    plt.axvline(x=threshold, color="r", linestyle="--", label="Threshold")
 
     plt.title("Distribution of Anomaly Scores")
     plt.xlabel("Anomaly Score (SPE)")
@@ -87,17 +87,26 @@ def plot_event_heatmap(event_count_matrix, time_based_index, output_path=None):
         time_based_index (bool): Whether the index is time-based
         output_path (str, optional): Path to save the visualization
     """
-    # Get top 20 events by variance.
     top_events = (
-        event_count_matrix.var().sort_values(ascending=False).head(20).index.tolist()
+        event_count_matrix.var().sort_values(ascending=False).head(15).index.tolist()
     )
 
-    plt.figure(figsize=(14, 8))
-    sns.heatmap(
+    plt.figure(figsize=(12, 6))  # Reduce width, adjust height
+    ax = sns.heatmap(
         event_count_matrix[top_events].T,
         cmap="YlGnBu",
-        xticklabels=50 if len(event_count_matrix) > 50 else True,
+        xticklabels=30 if len(event_count_matrix) > 30 else True,
+        yticklabels=True,
     )
+
+    # Rotate and format X-axis (time-based index)
+    if time_based_index:
+        plt.xticks(rotation=30, ha="right", fontsize=9)
+    else:
+        plt.xticks(rotation=0, fontsize=10)
+
+    # Reduce Y-axis font size
+    plt.yticks(fontsize=9)
 
     plt.title("Event Frequency Heatmap (Top Events by Variance)")
     plt.xlabel("Time Window" if time_based_index else "Window Index")
@@ -128,7 +137,7 @@ def plot_tsne(event_count_matrix, anomaly_scores, is_anomaly, output_path=None):
         tsne_results[:, 0],
         tsne_results[:, 1],
         c=anomaly_scores,
-        cmap="coolwarm",
+        cmap="Reds",
         alpha=0.7,
     )
 
