@@ -57,6 +57,7 @@ class Preprocessor:
             )
 
     def preprocess(self, raw_log: str) -> dict[str, str]:
+        raw_log = raw_log.strip()
         matched = self.log_pattern.match(raw_log)
 
         if not matched:
