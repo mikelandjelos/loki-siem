@@ -56,7 +56,7 @@ def drain_benchmark(configs: dict[str, tuple[DrainConfig, str]]):
 
 
 def get_parser(parent_subparsers: Optional[argparse._SubParsersAction] = None):
-    "Drain log parser."
+    """Drain log parser."""
     parser = (
         argparse.ArgumentParser(description=get_parser.__doc__)
         if not parent_subparsers

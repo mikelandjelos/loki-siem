@@ -1,5 +1,5 @@
 import os
-from os.path import join
+from os.path import exists, join
 
 import pandas as pd
 
@@ -21,3 +21,12 @@ def dataset_to_csv(df: pd.DataFrame, results_dir, dataset_name: str):
     features_results_dir = join(results_dir, dataset_name)
     os.makedirs(features_results_dir, exist_ok=True)
     df.to_csv(join(features_results_dir, f"{dataset_name}.csv"))
+
+
+def log_generator(log_file: str):
+    if not exists(log_file):
+        raise ValueError(f"Log file '{log_file}' doesn't exist.")
+
+    with open(log_file) as f:
+        for line in f:
+            yield line

@@ -1,10 +1,9 @@
-from os import makedirs, pardir
-from os.path import dirname, exists, join
+from os.path import exists, join
 
 import pandas as pd
 
 from .._util import dataset_to_csv, get_all_files_recursively, get_dataset_name
-from .event_count import event_count_matrix
+from .event_count_matrix import event_count_matrix
 from .windowing import fixed_time_window
 
 RESULTS_DIR = join("results", "features")

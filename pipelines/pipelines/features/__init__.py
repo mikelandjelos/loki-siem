@@ -1,7 +1,7 @@
-from . import event_count, features, windowing
+from . import event_count_matrix, features, windowing
 
 __all__ = [
-    "event_count",
+    "event_count_matrix",
     "features",
     "windowing",
 ]
