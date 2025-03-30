@@ -2,7 +2,11 @@ from os.path import exists, join
 
 import pandas as pd
 
-from .._util import dataset_to_csv, get_all_files_recursively, get_dataset_name
+from ..utils.functions import (
+    dataset_to_csv,
+    get_all_files_recursively,
+    get_dataset_name,
+)
 from .pca import pca_subspace_anomaly_detection
 
 RESULTS_DIR = join("results", "anomalies")

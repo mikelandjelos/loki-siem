@@ -9,7 +9,7 @@ from typing import Optional
 from drain3 import TemplateMiner
 from drain3.template_miner_config import TemplateMinerConfig
 
-from ..._util import get_dataset_name, log_generator
+from ...utils.functions import get_dataset_name, log_generator
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(message)s")

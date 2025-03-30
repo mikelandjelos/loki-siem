@@ -4,12 +4,15 @@ import logging
 import os
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import datetime
 from os.path import exists, join
 from time import perf_counter
 from typing import Optional
 
-from .._util import get_dataset_name, log_generator
+import pandas as pd
+
+from ..utils.functions import get_dataset_name, log_generator
+from ..utils.metrics_monitor import MetricsMonitor
 
 RESULTS_DIR = join("results", "parsing", "preprocessing")
 
@@ -220,6 +223,8 @@ def main(args: Optional[argparse.Namespace] = None):
         }
     )
 
+    metrics_gathered = []
+
     for (
         logfile,
         log_pattern,
@@ -231,6 +236,7 @@ def main(args: Optional[argparse.Namespace] = None):
             strict=args.strict,
         )
         dataset_name = get_dataset_name(logfile)
+        metrics_monitor = MetricsMonitor()
 
         log_count = 0
         unmatched_count = 0
@@ -242,6 +248,7 @@ def main(args: Optional[argparse.Namespace] = None):
         with open(result_file, "w", newline="", encoding="utf-8") as csvfile:
             writer = None
 
+            metrics_monitor.start()
             for raw_log in log_generator(logfile):
                 preprocessed_logs.append(preprocessor.preprocess(raw_log))
 
@@ -259,6 +266,12 @@ def main(args: Optional[argparse.Namespace] = None):
                     writer.writerows(preprocessed_logs)
                     preprocessed_logs = []
 
+            metrics_df = metrics_monitor.stop(log_count)
+            metrics_df["Dataset"] = dataset_name
+            metrics_df["Unmatched logs"] = round(unmatched_count * 100.0 / log_count, 4)
+
+            metrics_gathered.append(metrics_df)
+
             if len(preprocessed_logs) > 0 and writer is not None:
                 writer.writerows(preprocessed_logs)
 
@@ -268,6 +281,10 @@ def main(args: Optional[argparse.Namespace] = None):
             f"average rate of {log_count/(end-start)} [log/sec] - {log_count} logs in {end-start} seconds. "
             f"Unmatched logs: {unmatched_count * 100. / log_count} %"
         )
+
+    pd.concat(metrics_gathered, ignore_index=True).to_csv(
+        join(RESULTS_DIR, "metrics.csv"), index=False
+    )
 
 
 if __name__ == "__main__":

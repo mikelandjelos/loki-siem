@@ -175,6 +175,7 @@ cython_debug/
 
 data/
 results/
+old_results/
 tree.txt
 
 .vscode/*
