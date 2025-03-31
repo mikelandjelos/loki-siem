@@ -175,6 +175,7 @@ cython_debug/
 
 data/
 results/
+metrics/
 old_results/
 tree.txt
 

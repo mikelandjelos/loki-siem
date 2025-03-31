@@ -15,6 +15,8 @@ from ..utils.functions import get_dataset_name, log_generator
 from ..utils.metrics_monitor import MetricsMonitor
 
 RESULTS_DIR = join("results", "parsing", "preprocessing")
+METRICS_DIR = join("metrics", "parsing", "preprocessing")
+BATCH_SIZE = 10000
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(message)s")
@@ -42,7 +44,7 @@ def get_parser(parent_subparsers: Optional[argparse._SubParsersAction] = None):
         "--dataset",
         choices=dataset_choices,
         required=False,
-        help=f"Select the dataset to preprocess (options: \n{', '.join(DATASET_PREPROCESSING_PARAMETERS.keys())})",
+        help=f"Select the dataset to preprocess.",
         default="all",
     )
 
@@ -108,6 +110,9 @@ class Preprocessor:
         return structured
 
 
+# Only this, first task (preprocessing), has dataset-specific inputs; this has been done to facilitate automatic
+# downstream tasks. Basically, only this phase needs dataset-specific parameter tweaking, all downstream tasks
+# need only algorithm parameter tweaking.
 DATASET_PREPROCESSING_PARAMETERS = {
     "Apache": (
         join("data", "loghub_full", "Apache", "Apache_full.log"),
@@ -207,8 +212,8 @@ DATASET_PREPROCESSING_PARAMETERS = {
 
 
 def main(args: Optional[argparse.Namespace] = None):
-    if not exists(RESULTS_DIR):
-        os.makedirs(RESULTS_DIR, exist_ok=True)
+    os.makedirs(RESULTS_DIR, exist_ok=True)
+    os.makedirs(METRICS_DIR, exist_ok=True)
 
     if not args:
         args = get_parser().parse_args()
@@ -242,29 +247,31 @@ def main(args: Optional[argparse.Namespace] = None):
         unmatched_count = 0
         start = perf_counter()
 
-        BATCH_SIZE = 10000
-        preprocessed_logs = []
+        batch = []
         result_file = join(RESULTS_DIR, f"{dataset_name}.csv")
         with open(result_file, "w", newline="", encoding="utf-8") as csvfile:
             writer = None
 
             metrics_monitor.start()
             for raw_log in log_generator(logfile):
-                preprocessed_logs.append(preprocessor.preprocess(raw_log))
+                batch.append(preprocessor.preprocess(raw_log))
 
-                if len(preprocessed_logs[-1].keys()) == 1:
+                if len(batch[-1].keys()) == 1:
                     unmatched_count += 1
 
                 if writer is None:
-                    fieldnames = list(preprocessed_logs[0].keys())
+                    fieldnames = list(batch[0].keys())
                     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                     writer.writeheader()
 
                 log_count += 1
 
                 if log_count % BATCH_SIZE == 0:
-                    writer.writerows(preprocessed_logs)
-                    preprocessed_logs = []
+                    writer.writerows(batch)
+                    batch = []
+
+            if len(batch) > 0 and writer is not None:
+                writer.writerows(batch)
 
             metrics_df = metrics_monitor.stop(log_count)
             metrics_df["Dataset"] = dataset_name
@@ -272,18 +279,16 @@ def main(args: Optional[argparse.Namespace] = None):
 
             metrics_gathered.append(metrics_df)
 
-            if len(preprocessed_logs) > 0 and writer is not None:
-                writer.writerows(preprocessed_logs)
-
         end = perf_counter()
         logger.info(
             f"Dataset `{dataset_name}` finished preprocessing at an "
             f"average rate of {log_count/(end-start)} [log/sec] - {log_count} logs in {end-start} seconds. "
-            f"Unmatched logs: {unmatched_count * 100. / log_count} %"
+            f"Unmatched logs: {unmatched_count * 100. / log_count} [%]"
         )
 
     pd.concat(metrics_gathered, ignore_index=True).to_csv(
-        join(RESULTS_DIR, "metrics.csv"), index=False
+        join(METRICS_DIR, f"preprocessing_{datetime.now().isoformat()}.csv"),
+        index=False,
     )
 
 
